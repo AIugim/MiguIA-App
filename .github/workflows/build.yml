@@ -3,7 +3,7 @@ on: [push, workflow_dispatch]
 
 jobs:
   build:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest # Usamos la versión más nueva y estable
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -12,4 +12,8 @@ jobs:
         uses: ArtemSBulgakov/buildozer-action@v1
         with:
           buildozer_version: master
-          save_buildozer_config: true
+          # Aquí está el truco: le decimos que no intente cambiar el dueño de los archivos
+          save_buildozer_config: false 
+        env:
+          # Forzamos al sistema a saber quién es el usuario
+          USER: root
