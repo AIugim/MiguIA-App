@@ -3,8 +3,8 @@ on: [push, workflow_dispatch]
 
 jobs:
   build:
-    # Usamos Ubuntu 20.04 para evitar el bloqueo de Python 3.12
-    runs-on: ubuntu-20.04 
+    # Esta versión arranca al instante y es muy estable
+    runs-on: ubuntu-22.04 
     
     steps:
       - name: Checkout code
@@ -16,5 +16,6 @@ jobs:
           buildozer_version: master
           save_buildozer_config: false
         env:
-          # Esto ayuda a saltarse algunas protecciones de permisos
           USER: root
+          # Este comando es el "abrete sésamo" para evitar el error de Python
+          PIP_BREAK_SYSTEM_PACKAGES: 1
