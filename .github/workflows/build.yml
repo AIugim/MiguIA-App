@@ -31,3 +31,9 @@ jobs:
           yes | buildozer -v android debug
         env:
           USER: root
+
+      - name: Subir APK (Artifact)
+        uses: actions/upload-artifact@v4
+        with:
+          name: MiguIA-Package
+          path: bin/*.apk
