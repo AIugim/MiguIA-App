@@ -3,7 +3,9 @@ on: [push, workflow_dispatch]
 
 jobs:
   build:
-    runs-on: ubuntu-latest # Usamos la versión más nueva y estable
+    # Usamos Ubuntu 20.04 para evitar el bloqueo de Python 3.12
+    runs-on: ubuntu-20.04 
+    
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -12,8 +14,7 @@ jobs:
         uses: ArtemSBulgakov/buildozer-action@v1
         with:
           buildozer_version: master
-          # Aquí está el truco: le decimos que no intente cambiar el dueño de los archivos
-          save_buildozer_config: false 
+          save_buildozer_config: false
         env:
-          # Forzamos al sistema a saber quién es el usuario
+          # Esto ayuda a saltarse algunas protecciones de permisos
           USER: root
