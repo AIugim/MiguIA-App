@@ -4,10 +4,10 @@
 title = My Application
 
 # (str) package.name = miguia
-package.name = myapp
+package.name = miguia
 
 # (str) Package domain (needed for android/ios packaging)
-package.domain = org.test
+package.domain = org.unfv
 
 # (str) Source code where the main.py live
 source.dir = .
@@ -37,8 +37,7 @@ version = 0.1
 
 # (list) Application requirements
 # comma separated e.g. requirements = sqlite3,kivy
-requirements = python3,kivy,requests,openssl,urllib3,certifi,charset-normalizer,idna
-
+requirements = python3,kivy,requests,certifi,openssl,urllib3,idna,charset-normalizer
 # (str) Custom source folders for requirements
 # Sets custom source for any requirements with recipes
 # requirements.source.kivy = ../../kivy
@@ -95,7 +94,8 @@ fullscreen = 0
 
 # (list) Permissions
 # (See https://python-for-android.readthedocs.io/en/latest/buildoptions/#build-options-1 for all the supported syntaxes and properties)
-android.permissions = android.permission.INTERNET, (name=android.permission.WRITE_EXTERNAL_STORAGE;maxSdkVersion=18)
+android.permissions = INTERNET
+fullscreen = 0
 
 # (list) features (adds uses-feature -tags to manifest)
 #android.features = android.hardware.usb.host
