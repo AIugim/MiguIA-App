@@ -7,49 +7,61 @@ from kivy.uix.scrollview import ScrollView
 import requests
 import json
 
-class MiguIA_App(App):
+class MiguIA(App):
     def build(self):
         self.layout = BoxLayout(orientation='vertical', padding=10, spacing=10)
         
-        # Título épico de MiguIA
-        self.layout.add_widget(Label(text="[b]MiguIA - UNFV Edition[/b]", 
-                                    markup=True, size_hint_y=0.1, font_size='20sp'))
+        # Título
+        self.layout.add_widget(Label(text="MiguIA - UNFV Edition", size_hint_y=None, height=50, bold=True))
 
-        # Área de chat
-        self.scroll = ScrollView(size_hint_y=0.7)
-        self.chat_history = Label(text="MiguIA: ¡Hola Miguel! Estoy listo para tus consultas universitarias.\n", 
-                                 valign='top', halign='left', text_size=(400, None))
+        # Configuración de URL (Para no compilar cada vez)
+        self.url_input = TextInput(
+            text="https://nonciliated-overprolifically-reva.ngrok-free.dev", 
+            hint_text="Pega aquí tu nueva URL de Ngrok",
+            size_hint_y=None, height=50, multiline=False
+        )
+        self.layout.add_widget(self.url_input)
+
+        # Historial de chat
+        self.scroll = ScrollView()
+        self.chat_history = Label(text="MiguIA: ¡Conexión lista! Escribe algo abajo.\n", 
+                                 size_hint_y=None, halign='left', valign='top')
+        self.chat_history.bind(size=self.chat_history.setter('text_size'))
         self.scroll.add_widget(self.chat_history)
         self.layout.add_widget(self.scroll)
 
-        # Entrada de texto
-        self.input = TextInput(hint_text="Escribe a MiguIA...", size_hint_y=0.1, multiline=False)
+        # Entrada de mensaje
+        self.input = TextInput(hint_text="Pregúntale algo a la IA...", size_hint_y=None, height=100)
         self.layout.add_widget(self.input)
 
         # Botón enviar
-        btn = Button(text="Enviar", size_hint_y=0.1, background_color=(0, 0.7, 0.3, 1))
-        btn.bind(on_press=self.enviar_mensaje)
-        self.layout.add_widget(btn)
+        self.btn = Button(text="Enviar", size_hint_y=None, height=60, background_color=(0, 0.4, 0, 1))
+        self.btn.bind(on_press=self.send_message)
+        self.layout.add_widget(self.btn)
 
         return self.layout
 
-    def enviar_mensaje(self, instance):
-        pregunta = self.input.text
-        if pregunta:
-            self.chat_history.text += f"Miguel: {pregunta}\n"
+    def send_message(self, instance):
+        user_text = self.input.text.strip()
+        ngrok_url = self.url_input.text.strip()
+        
+        if user_text:
+            self.chat_history.text += f"\nMiguel: {user_text}\n"
             self.input.text = ""
             
-            # --- AQUÍ ESTÁ TU DIRECCIÓN DE NGROK ---
-            url_ngrok = "https://nonciliated-overprolifically-reva.ngrok-free.dev/api/generate"
-            
-            data = {"model": "llama3", "prompt": pregunta, "stream": False}
-            
             try:
-                res = requests.post(url_ngrok, json=data, timeout=10)
-                respuesta = res.json()['response']
-                self.chat_history.text += f"MiguIA: {respuesta}\n\n"
+                # LLAMADA CON SALTO DE ADVERTENCIA DE NGROK
+                response = requests.post(
+                    f"{ngrok_url}/api/generate",
+                    json={"model": "llama3", "prompt": user_text, "stream": False},
+                    headers={"ngrok-skip-browser-warning": "true"}, # <--- EL TRUCO MÁGICO
+                    timeout=30
+                )
+                
+                if response.status_code == 200:
+                    answer = response.json().get('response', 'Sin respuesta')
+                    self.chat_history.text += f"MiguIA: {answer}\n"
+                else:
+                    self.chat_history.text += f"Error del servidor: {response.status_code}\n"
             except Exception as e:
-                self.chat_history.text += f"Error: ¿Ngrok está abierto? {e}\n"
-
-if __name__ == '__main__':
-    MiguIA_App().run()
+                self.chat_history.text += f"MiguIA: Revisa si tu Nitro V15 tiene el Ngrok abierto.\n"
